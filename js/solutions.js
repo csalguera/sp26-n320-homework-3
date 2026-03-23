@@ -216,10 +216,14 @@ composerTextareaRef.addEventListener("input", () => {
 
 postBtnRef.addEventListener("click", () => {
   const postText = composerTextareaRef.value.trim();
+  const hashtags = (postText.match(/#[a-z0-9_]+/gi) || []).map((tag) =>
+    tag.toLowerCase(),
+  );
+  const uniqueHashtags = [...new Set(hashtags)];
 
   const newPost = document.createElement("article");
   newPost.classList.add("post-card", "new-post");
-  newPost.setAttribute("data-tags", "");
+  newPost.setAttribute("data-tags", uniqueHashtags.join(","));
 
   newPost.innerHTML = `
     <p class="post-body">${postText}</p>
@@ -298,7 +302,10 @@ tagPillsRef.forEach((pill) => {
       if (tag === "all") {
         post.classList.remove("hidden");
       } else {
-        const tags = post.getAttribute("data-tags").split(",");
+        const tags = (post.getAttribute("data-tags") || "")
+          .split(/\s+|,/)
+          .filter(Boolean)
+          .map((t) => t.toLowerCase());
         if (tags.includes(tag)) {
           post.classList.remove("hidden");
         } else {
@@ -314,7 +321,7 @@ tagPillsRef.forEach((pill) => {
     if (tag === "all") {
       filterResultMsgRef.textContent = `Showing all ${visibleCount} posts`;
     } else {
-      filterResultMsgRef.textContent = `${visibleCount} post(s) tagged #${tag}`;
+      filterResultMsgRef.textContent = `${visibleCount} post(s) tagged ${tag}`;
     }
   });
 });
