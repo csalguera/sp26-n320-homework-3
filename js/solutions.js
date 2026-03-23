@@ -240,3 +240,43 @@ postBtnRef.addEventListener("click", () => {
   const currentCount = parseInt(postCountRef.textContent);
   postCountRef.textContent = (currentCount + 1).toString();
 });
+
+function attachLikeListeners() {
+  const likeButtons = document.querySelectorAll(".like-btn");
+
+  likeButtons.forEach((btn) => {
+    const fresh = btn.cloneNode(true);
+    btn.parentNode.replaceChild(fresh, btn);
+
+    fresh.addEventListener("click", () => {
+      const alreadyLiked = fresh.getAttribute("data-liked") === "true";
+      const likeCountSpan = fresh.querySelector(".like-count");
+      let count = parseInt(likeCountSpan.textContent);
+
+      if (alreadyLiked) {
+        fresh.setAttribute("data-liked", "false");
+        fresh.classList.remove("liked");
+        fresh.querySelector(".like-icon").textContent = "🤍";
+        likeCountSpan.textContent = (count - 1).toString();
+      } else {
+        fresh.setAttribute("data-liked", "true");
+        fresh.classList.add("liked");
+        fresh.querySelector(".like-icon").textContent = "❤️";
+        likeCountSpan.textContent = (count + 1).toString();
+      }
+
+      updateTotalLikes();
+    });
+  });
+}
+
+function updateTotalLikes() {
+  const likedButtons = document.querySelectorAll(
+    '.like-btn[data-liked="true"]',
+  );
+  const totalLikedCountRef = document.querySelector("#totalLikedCount");
+  totalLikedCountRef.textContent = likedButtons.length.toString();
+}
+
+// Initial call to wire up like buttons on existing posts
+attachLikeListeners();
