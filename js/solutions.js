@@ -280,3 +280,41 @@ function updateTotalLikes() {
 
 // Initial call to wire up like buttons on existing posts
 attachLikeListeners();
+
+const tagPillsRef = document.querySelectorAll(".tag-pill");
+const filterResultMsgRef = document.querySelector("#filterResultMsg");
+
+tagPillsRef.forEach((pill) => {
+  pill.addEventListener("click", () => {
+    tagPillsRef.forEach((p) => p.classList.remove("active"));
+    pill.classList.add("active");
+
+    const tag = pill.getAttribute("data-tag");
+    const postCards = Array.from(
+      document.querySelectorAll("#postFeed .post-card"),
+    );
+
+    postCards.forEach((post) => {
+      if (tag === "all") {
+        post.classList.remove("hidden");
+      } else {
+        const tags = post.getAttribute("data-tags").split(",");
+        if (tags.includes(tag)) {
+          post.classList.remove("hidden");
+        } else {
+          post.classList.add("hidden");
+        }
+      }
+    });
+
+    const visibleCount = postCards.filter(
+      (p) => !p.classList.contains("hidden"),
+    ).length;
+
+    if (tag === "all") {
+      filterResultMsgRef.textContent = `Showing all ${visibleCount} posts`;
+    } else {
+      filterResultMsgRef.textContent = `${visibleCount} post(s) tagged #${tag}`;
+    }
+  });
+});
