@@ -171,3 +171,26 @@ themeToggleBtnRef.addEventListener("click", () => {
     themeLabelRef.textContent = "Light Mode";
   }
 });
+
+const followBtnRef = document.querySelector("#followBtn");
+const followBtnTextRef = document.querySelector("#followBtnText");
+const followerCountRef = document.querySelector("#followerCount");
+
+let isFollowing = false;
+let followers = 1284;
+
+followBtnRef.addEventListener("click", () => {
+  isFollowing = !isFollowing;
+
+  if (isFollowing) {
+    followers++;
+    followBtnTextRef.textContent = "✅ Following";
+    followBtnRef.classList.add("following");
+  } else {
+    followers--;
+    followBtnTextRef.textContent = "➕ Follow";
+    followBtnRef.classList.remove("following");
+  }
+
+  followerCountRef.textContent = followers.toLocaleString();
+});
