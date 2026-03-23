@@ -156,8 +156,10 @@
 const themeToggleBtnRef = document.querySelector("#themeToggleBtn");
 const themeIconRef = document.querySelector("#themeIcon");
 const themeLabelRef = document.querySelector("#themeLabel");
+// Track the active theme state so each click can flip it.
 let isDark = true;
 
+// Toggle document theme attributes and button labels when the user clicks.
 themeToggleBtnRef.addEventListener("click", () => {
   isDark = !isDark;
 
@@ -176,9 +178,11 @@ const followBtnRef = document.querySelector("#followBtn");
 const followBtnTextRef = document.querySelector("#followBtnText");
 const followerCountRef = document.querySelector("#followerCount");
 
+// Keep current follow status and follower total in local state.
 let isFollowing = false;
 let followers = 1284;
 
+// Flip follow state and sync the button appearance and follower number.
 followBtnRef.addEventListener("click", () => {
   isFollowing = !isFollowing;
 
@@ -201,6 +205,7 @@ const postBtnRef = document.querySelector("#postBtn");
 const postFeedRef = document.querySelector("#postFeed");
 const postCountRef = document.querySelector("#postCount");
 
+// Update live character feedback and prevent empty posts.
 composerTextareaRef.addEventListener("input", () => {
   const remaining = 280 - composerTextareaRef.value.length;
   charCounterRef.textContent = `${remaining} characters remaining`;
@@ -214,15 +219,19 @@ composerTextareaRef.addEventListener("input", () => {
   postBtnRef.disabled = composerTextareaRef.value.trim() === "";
 });
 
+// Build and prepend a new post card when the user publishes.
 postBtnRef.addEventListener("click", () => {
   const postText = composerTextareaRef.value.trim();
+  // Extract hashtag tokens from post text so filters can use them later.
   const hashtags = (postText.match(/#[a-z0-9_]+/gi) || []).map((tag) =>
     tag.toLowerCase(),
   );
+  // Remove duplicate hashtags so data-tags stays clean.
   const uniqueHashtags = [...new Set(hashtags)];
 
   const newPost = document.createElement("article");
   newPost.classList.add("post-card", "new-post");
+  // Store tags as a string for the hashtag filter.
   newPost.setAttribute("data-tags", uniqueHashtags.join(","));
 
   newPost.innerHTML = `
@@ -234,6 +243,7 @@ postBtnRef.addEventListener("click", () => {
   `;
 
   postFeedRef.prepend(newPost);
+  // Reattach like listeners so the new post's button is interactive.
   attachLikeListeners();
 
   composerTextareaRef.value = "";
@@ -245,10 +255,12 @@ postBtnRef.addEventListener("click", () => {
   postCountRef.textContent = (currentCount + 1).toString();
 });
 
+// Attach fresh like handlers to every like button in the feed.
 function attachLikeListeners() {
   const likeButtons = document.querySelectorAll(".like-btn");
 
   likeButtons.forEach((btn) => {
+    // Clone each button to avoid stacking duplicate click listeners.
     const fresh = btn.cloneNode(true);
     btn.parentNode.replaceChild(fresh, btn);
 
@@ -258,22 +270,26 @@ function attachLikeListeners() {
       let count = parseInt(likeCountSpan.textContent);
 
       if (alreadyLiked) {
+        // Unliking resets button style and decrements the local count display.
         fresh.setAttribute("data-liked", "false");
         fresh.classList.remove("liked");
         fresh.querySelector(".like-icon").textContent = "🤍";
         likeCountSpan.textContent = (count - 1).toString();
       } else {
+        // Liking marks the button and increments the local count display.
         fresh.setAttribute("data-liked", "true");
         fresh.classList.add("liked");
         fresh.querySelector(".like-icon").textContent = "❤️";
         likeCountSpan.textContent = (count + 1).toString();
       }
 
+      // Refresh the sidebar summary of liked posts.
       updateTotalLikes();
     });
   });
 }
 
+// Count currently liked posts and update the likes summary text.
 function updateTotalLikes() {
   const likedButtons = document.querySelectorAll(
     '.like-btn[data-liked="true"]',
@@ -288,8 +304,10 @@ attachLikeListeners();
 const tagPillsRef = document.querySelectorAll(".tag-pill");
 const filterResultMsgRef = document.querySelector("#filterResultMsg");
 
+// Filter visible posts based on the selected hashtag pill.
 tagPillsRef.forEach((pill) => {
   pill.addEventListener("click", () => {
+    // Keep only the clicked filter pill visually active.
     tagPillsRef.forEach((p) => p.classList.remove("active"));
     pill.classList.add("active");
 
@@ -302,6 +320,7 @@ tagPillsRef.forEach((pill) => {
       if (tag === "all") {
         post.classList.remove("hidden");
       } else {
+        // Normalize tags so matching works for both commas and spaces.
         const tags = (post.getAttribute("data-tags") || "")
           .split(/\s+|,/)
           .filter(Boolean)
@@ -321,6 +340,7 @@ tagPillsRef.forEach((pill) => {
     if (tag === "all") {
       filterResultMsgRef.textContent = `Showing all ${visibleCount} posts`;
     } else {
+      // Show how many posts matched the chosen hashtag.
       filterResultMsgRef.textContent = `${visibleCount} post(s) tagged ${tag}`;
     }
   });
