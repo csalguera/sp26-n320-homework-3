@@ -152,3 +152,22 @@
 // ============================================================
 
 // YOUR CODE HERE
+
+const themeToggleBtnRef = document.querySelector("#themeToggleBtn");
+const themeIconRef = document.querySelector("#themeIcon");
+const themeLabelRef = document.querySelector("#themeLabel");
+let isDark = true;
+
+themeToggleBtnRef.addEventListener("click", () => {
+  isDark = !isDark;
+
+  if (isDark) {
+    document.documentElement.setAttribute("data-theme", "dark");
+    themeIconRef.textContent = "🌙";
+    themeLabelRef.textContent = "Dark Mode";
+  } else {
+    document.documentElement.setAttribute("data-theme", "light");
+    themeIconRef.textContent = "☀️";
+    themeLabelRef.textContent = "Light Mode";
+  }
+});
