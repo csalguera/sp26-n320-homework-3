@@ -194,3 +194,49 @@ followBtnRef.addEventListener("click", () => {
 
   followerCountRef.textContent = followers.toLocaleString();
 });
+
+const composerTextareaRef = document.querySelector("#composerTextarea");
+const charCounterRef = document.querySelector("#charCounter");
+const postBtnRef = document.querySelector("#postBtn");
+const postFeedRef = document.querySelector("#postFeed");
+const postCountRef = document.querySelector("#postCount");
+
+composerTextareaRef.addEventListener("input", () => {
+  const remaining = 280 - composerTextareaRef.value.length;
+  charCounterRef.textContent = `${remaining} characters remaining`;
+
+  if (remaining < 20) {
+    charCounterRef.classList.add("counter-warning");
+  } else {
+    charCounterRef.classList.remove("counter-warning");
+  }
+
+  postBtnRef.disabled = composerTextareaRef.value.trim() === "";
+});
+
+postBtnRef.addEventListener("click", () => {
+  const postText = composerTextareaRef.value.trim();
+
+  const newPost = document.createElement("article");
+  newPost.classList.add("post-card", "new-post");
+  newPost.setAttribute("data-tags", "");
+
+  newPost.innerHTML = `
+    <p class="post-body">${postText}</p>
+    <button class="like-btn" data-liked="false">
+      <span class="like-icon">🤍</span>
+      <span class="like-count">0</span>
+    </button>
+  `;
+
+  postFeedRef.prepend(newPost);
+  attachLikeListeners();
+
+  composerTextareaRef.value = "";
+  charCounterRef.textContent = "280 characters remaining";
+  charCounterRef.classList.remove("counter-warning");
+  postBtnRef.disabled = true;
+
+  const currentCount = parseInt(postCountRef.textContent);
+  postCountRef.textContent = (currentCount + 1).toString();
+});
